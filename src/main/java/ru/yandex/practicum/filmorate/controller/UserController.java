@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -15,29 +17,30 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
+        log.info("Getting users...");
         return users;
     }
 
     @PostMapping
-    public String addUser(@RequestBody User user) {
+    public void addUser(@RequestBody User user) {
         user.setId(counter++);
         users.add(user);
-        return "User was successfully added!";
+        log.info("User was successfully added!");
     }
 
     @PutMapping
-    public String updateUser(@RequestBody User user) {
+    public void updateUser(@RequestBody User user) {
         int id = user.getId();
 
         Optional<User> optionalUser = users.stream()
                 .filter(user1 -> user1.getId() == id)
                 .findFirst();
         if (optionalUser.isEmpty()) {
-            return "User with such ID wasn't found!";
+            log.info("User with such ID wasn't found!");
         } else {
             User oldUser = optionalUser.get();
             users.set(users.indexOf(oldUser), user);
-            return "User was successfully updated!";
+            log.info("User was successfully updated!");
         }
     }
 }
