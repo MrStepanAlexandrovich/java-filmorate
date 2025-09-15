@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,19 +25,36 @@ public class FilmController {
     }
 
     @PostMapping
-    public void addFilm(@RequestBody Film film) {
-           film.setId(counter++);
-           films.add(film);
-           log.info("Film was successfully added!");
+    public void addFilm(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
+            || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
+            if (film.getDuration().isPositive()) {
+                film.setId(counter++);
+                films.add(film);
+                log.info("Film was successfully added!");
+            } else {
+                log.info("Film wasn't added because duration is negative!");
+            }
+        } else {
+            log.info("Film wasn't added because it's too old!");
+        }
     }
 
     @PutMapping
-    public void updateFilm(@RequestBody Film film) {
+    public void updateFilm(@Valid @RequestBody Film film) {
         Optional<Film> filmOptional = findFilmById(film.getId());
         if (filmOptional.isPresent()) {
-            Film oldFilm = filmOptional.get();
-            films.set(films.indexOf(oldFilm), film);
-            log.info("Film was successfully updated!");
+            if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
+                    || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
+                if (film.getDuration().isPositive()) {
+                    films.add(film.getId(), film);
+                    log.info("Film was successfully updated!");
+                } else {
+                    log.info("Film wasn't updated because duration is negative!");
+                }
+            } else {
+                log.info("Film wasn't updated because it's too old!");
+            }
         } else {
             log.info("Film with such ID wasn't found!");
         }
