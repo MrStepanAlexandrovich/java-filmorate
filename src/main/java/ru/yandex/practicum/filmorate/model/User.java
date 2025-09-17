@@ -5,11 +5,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class User {
     private int id;
 
@@ -20,7 +22,6 @@ public class User {
     @Pattern(regexp = "^\\S*$", message = "Login shouldn't contain any spaces!")
     private String login;
 
-    @NotBlank(message = "Name field must not be empty!")
     private String name;
 
     @NotNull

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -47,7 +46,7 @@ public class FilmController {
             if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
                     || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
                 if (film.getDuration().isPositive()) {
-                    films.add(film.getId(), film);
+                    films.set(films.indexOf(filmOptional.get()), film);
                     log.info("Film was successfully updated!");
                 } else {
                     log.info("Film wasn't updated because duration is negative!");

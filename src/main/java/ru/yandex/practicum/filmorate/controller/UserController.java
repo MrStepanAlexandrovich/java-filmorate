@@ -24,6 +24,9 @@ public class UserController {
 
     @PostMapping
     public void addUser(@Valid @RequestBody User user) {
+        if (user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         user.setId(counter++);
         users.add(user);
         log.info("User was successfully added!");

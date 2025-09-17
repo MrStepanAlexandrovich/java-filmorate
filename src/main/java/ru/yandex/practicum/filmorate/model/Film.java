@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,8 +13,8 @@ import java.time.LocalDate;
 /**
  * Film.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 public class Film {
     private int id;
 
