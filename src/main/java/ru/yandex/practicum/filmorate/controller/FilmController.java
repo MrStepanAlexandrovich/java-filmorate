@@ -14,7 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private static int counter = 1;
+    private int counter = 1;
     List<Film> films = new ArrayList<>();
 
     @GetMapping

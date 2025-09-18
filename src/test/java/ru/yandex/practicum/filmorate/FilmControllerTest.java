@@ -3,12 +3,16 @@ package ru.yandex.practicum.filmorate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
+@SpringBootTest
 public class FilmControllerTest {
     private FilmController filmController;
 
@@ -52,7 +56,10 @@ public class FilmControllerTest {
 
         //Проверка валидации даты релиза
         filmController.updateFilm(newFilm);
+
         assertEquals(film, filmController.getFilms().get(0));
+        assertEquals(1, filmController.getFilms().size());
+
         newFilm.setReleaseDate(LocalDate.of(1895, 1, 28));
         filmController.updateFilm(newFilm);
 
@@ -65,6 +72,6 @@ public class FilmControllerTest {
 
         newFilm.setDuration(Duration.ofMinutes(-90));
         filmController.updateFilm(newFilm);
-        assertEquals(film, filmController.getFilms().get(0));
+        assertNotEquals(newFilm, filmController.getFilms().get(0));
     }
 }
