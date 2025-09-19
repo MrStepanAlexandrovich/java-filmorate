@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
@@ -42,7 +43,7 @@ public class UserController {
                 .findFirst();
         if (optionalUser.isEmpty()) {
             log.info("User with such ID wasn't found!");
-            return "";
+            throw new ValidationException("User with such ID wasn't found!");
         } else {
             User oldUser = optionalUser.get();
             users.set(users.indexOf(oldUser), user);

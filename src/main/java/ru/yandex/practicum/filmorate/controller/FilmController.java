@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -34,11 +35,11 @@ public class FilmController {
                 return film.toString();
             } else {
                 log.info("Film wasn't added because duration is negative!");
-                return "";
+                throw new ValidationException("Film wasn't added because duration is negative!");
             }
         } else {
             log.info("Film wasn't added because it's too old!");
-            return "";
+            throw new ValidationException("Film wasn't added because it's too old!");
         }
     }
 
@@ -54,15 +55,16 @@ public class FilmController {
                     return film.toString();
                 } else {
                     log.info("Film wasn't updated because duration is negative!");
-                    return "";
+                    throw new ValidationException("Film wasn't updated because duration is negative!");
                 }
             } else {
                 log.info("Film wasn't updated because it's too old!");
-                return "";
+                throw new ValidationException("Film wasn't updated because it's too old!");
             }
         } else {
             log.info("Film with such ID wasn't found!");
-            return "";
+            throw new ValidationException("Film with such ID wasn't found!");
+
         }
     }
 
