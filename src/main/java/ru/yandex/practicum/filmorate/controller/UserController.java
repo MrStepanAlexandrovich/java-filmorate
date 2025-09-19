@@ -23,17 +23,18 @@ public class UserController {
     }
 
     @PostMapping
-    public void addUser(@Valid @RequestBody User user) {
+    public String addUser(@Valid @RequestBody User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         user.setId(counter++);
         users.add(user);
         log.info("User was successfully added!");
+        return user.toString();
     }
 
     @PutMapping
-    public void updateUser(@Valid @RequestBody User user) {
+    public String updateUser(@Valid @RequestBody User user) {
         int id = user.getId();
 
         Optional<User> optionalUser = users.stream()
@@ -41,10 +42,12 @@ public class UserController {
                 .findFirst();
         if (optionalUser.isEmpty()) {
             log.info("User with such ID wasn't found!");
+            return "";
         } else {
             User oldUser = optionalUser.get();
             users.set(users.indexOf(oldUser), user);
             log.info("User was successfully updated!");
+            return user.toString();
         }
     }
 }
