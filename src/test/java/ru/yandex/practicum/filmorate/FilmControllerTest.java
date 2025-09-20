@@ -28,8 +28,14 @@ public class FilmControllerTest {
                 Duration.ofMinutes(90));
 
         //Проверка валидации даты релиза
-        ValidationException validationException = assertThrows(ValidationException.class, ()
-                -> filmController.addFilm(film));
+        ValidationException validationException = null;
+        try {
+            validationException = assertThrows(ValidationException.class, ()
+                    -> filmController.addFilm(film));
+        } catch (ValidationException e) {
+            e.getMessage();
+        }
+
 
         assertTrue(validationException.getMessage().contains("Film wasn't added because it's too old!"));
         assertEquals(0, filmController.getFilms().size());
@@ -43,8 +49,13 @@ public class FilmControllerTest {
 
         //Проверка валидации длительности
         film.setDuration(Duration.ofMinutes(-90));
-        ValidationException validationException1 = assertThrows(ValidationException.class, ()
-                -> filmController.addFilm(film));
+        ValidationException validationException1 = null;
+        try {
+            validationException1 = assertThrows(ValidationException.class, ()
+                    -> filmController.addFilm(film));
+        } catch (ValidationException e) {
+            e.getMessage();
+        }
 
         assertTrue(validationException1.getMessage().contains("Film wasn't added because duration is negative!"));
         assertEquals(0, filmController.getFilms().size());
