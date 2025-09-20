@@ -25,14 +25,14 @@ public class FilmController {
     }
 
     @PostMapping
-    public String addFilm(@Valid @RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
             || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
             if (film.getDuration().isPositive()) {
                 film.setId(counter++);
                 films.add(film);
                 log.info("Film was successfully added!");
-                return film.toString();
+                return film;
             } else {
                 log.info("Film wasn't added because duration is negative!");
                 throw new ValidationException("Film wasn't added because duration is negative!");
@@ -44,7 +44,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public String updateFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         Optional<Film> filmOptional = findFilmById(film.getId());
         if (filmOptional.isPresent()) {
             if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
@@ -52,7 +52,7 @@ public class FilmController {
                 if (film.getDuration().isPositive()) {
                     films.set(films.indexOf(filmOptional.get()), film);
                     log.info("Film was successfully updated!");
-                    return film.toString();
+                    return film;
                 } else {
                     log.info("Film wasn't updated because duration is negative!");
                     throw new ValidationException("Film wasn't updated because duration is negative!");

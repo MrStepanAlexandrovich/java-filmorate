@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -28,6 +29,6 @@ public class Film {
     private LocalDate releaseDate;
 
     @NotNull(message = "Duration must not be null!")
-    @JsonFormat(pattern = "MINUTES")
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
 }
