@@ -30,4 +30,13 @@ public class Film {
     @NotNull(message = "Duration must not be null!")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
+
+    public boolean releaseDateIsValid() {
+        return releaseDate.isAfter(LocalDate.of(1895, 1, 28))
+                || releaseDate.equals(LocalDate.of(1895, 1, 28));
+    }
+
+    public boolean durationIsValid() {
+        return duration.isPositive();
+    }
 }

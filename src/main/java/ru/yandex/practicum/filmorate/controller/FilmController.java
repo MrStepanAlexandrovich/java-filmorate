@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +14,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private int counter = 1;
-    List<Film> films = new ArrayList<>();
+    private int counter = 0;
+    private List<Film> films = new ArrayList<>();
 
     @GetMapping
     public List<Film> getFilms() {
@@ -26,10 +25,9 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
-            || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
-            if (film.getDuration().isPositive()) {
-                film.setId(counter++);
+        if (film.releaseDateIsValid()) {
+            if (film.durationIsValid()) {
+                film.setId(++counter);
                 films.add(film);
                 log.info("Film was successfully added!");
                 return film;
@@ -47,9 +45,8 @@ public class FilmController {
     public Film updateFilm(@Valid @RequestBody Film film) {
         Optional<Film> filmOptional = findFilmById(film.getId());
         if (filmOptional.isPresent()) {
-            if (film.getReleaseDate().isAfter(LocalDate.of(1895, 1, 28))
-                    || film.getReleaseDate().equals(LocalDate.of(1895, 1, 28))) {
-                if (film.getDuration().isPositive()) {
+            if (film.releaseDateIsValid()) {
+                if (film.durationIsValid()) {
                     films.set(films.indexOf(filmOptional.get()), film);
                     log.info("Film was successfully updated!");
                     return film;
@@ -64,7 +61,6 @@ public class FilmController {
         } else {
             log.info("Film with such ID wasn't found!");
             throw new ValidationException("Film with such ID wasn't found!");
-
         }
     }
 

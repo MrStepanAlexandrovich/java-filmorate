@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,7 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
     private int counter = 0;
-    List<User> users = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 
     @GetMapping
     public List<User> getUsers() {
@@ -26,7 +25,7 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        if (!user.getBirthday().isAfter(LocalDate.now())) {
+        if (!user.birthdayIsValid()) {
             if (user.getName() == null) {
                 user.setName(user.getLogin());
             }
@@ -51,7 +50,7 @@ public class UserController {
             log.info("User with such ID wasn't found!");
             throw new ValidationException("User with such ID wasn't found!");
         } else {
-            if (!user.getBirthday().isAfter(LocalDate.now())) {
+            if (!user.birthdayIsValid()) {
                 User oldUser = optionalUser.get();
                 users.set(users.indexOf(oldUser), user);
                 log.info("User was successfully updated!");

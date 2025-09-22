@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class User {
     private int id;
 
+    @NotBlank
     @Email(message = "Incorrect email!")
     private String email;
 
@@ -27,4 +28,8 @@ public class User {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthday;
+
+    public boolean birthdayIsValid() {
+        return birthday.isAfter(LocalDate.now());
+    }
 }
