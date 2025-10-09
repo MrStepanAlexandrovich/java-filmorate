@@ -9,4 +9,5 @@ public interface UserStorage {
     User add(User user);
     User update(User user);
     List<User> getUsers();
+    User findById(int id);
 }

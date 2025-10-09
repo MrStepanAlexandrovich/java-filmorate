@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -17,7 +18,13 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public void delete(int id) {
-
+        log.info("Deleting user...");
+        Optional<User> optionalUser = users.stream()
+                .filter(user -> user.getId() == id)
+                .findFirst();
+        if (optionalUser.isPresent()) {
+            users.remove(optionalUser.get());
+        }
     }
 
     @Override
@@ -62,5 +69,14 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public List<User> getUsers() {
         return users;
+    }
+
+    @Override
+    public Optional<User> findById(int id) {
+        Optional<User> optionalUser = users.stream()
+                .filter(user -> user.getId() == id)
+                .findFirst();
+
+        return optionalUser;
     }
 }

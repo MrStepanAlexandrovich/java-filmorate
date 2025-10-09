@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
     private UserStorage userStorage;
+    private UserService userService;
 
     @Autowired
     public UserController(UserStorage userStorage) {
@@ -39,5 +41,24 @@ public class UserController {
         return userStorage.update(user);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable int id) {
+        userStorage.delete(id);
+    }
 
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUsersFriends(@PathVariable int id) {
+        User user = userStorage.findById(id);
+        return user.getFriends();
+    }
 }
