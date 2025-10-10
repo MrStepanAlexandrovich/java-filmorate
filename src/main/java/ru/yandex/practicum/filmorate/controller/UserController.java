@@ -21,8 +21,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage) {
+    public UserController(UserStorage userStorage, UserService userService) {
         this.userStorage = userStorage;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -61,4 +62,14 @@ public class UserController {
         User user = userStorage.findById(id);
         return user.getFriends();
     }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriendsWithUser(
+            @PathVariable int id,
+            @PathVariable int otherId
+    ) {
+        return userService.getCommonFriends();
+    }
+
+
 }

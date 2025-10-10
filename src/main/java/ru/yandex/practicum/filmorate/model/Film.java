@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Film.
@@ -30,6 +31,8 @@ public class Film {
     @NotNull(message = "Duration must not be null!")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
+
+    private List<User> likedUsers;
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))

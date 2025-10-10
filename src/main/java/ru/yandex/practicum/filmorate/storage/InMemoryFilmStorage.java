@@ -70,7 +70,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films;
     }
 
-    private Optional<Film> findFilmById(int id) {
+    public Optional<Film> findFilmById(int id) {
         Optional<Film> filmOptional = films.stream()
                 .filter(film1 -> film1.getId() == id)
                 .findAny();
