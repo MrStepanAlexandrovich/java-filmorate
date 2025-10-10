@@ -9,8 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,7 +30,9 @@ public class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    private List<User> friends;
+    private Set<User> friends;
+
+    private Set<Film> likedFilms;
 
     public boolean birthdayIsValid() {
         return birthday.isAfter(LocalDate.now());

@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -72,11 +71,15 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public Optional<User> findById(int id) {
+    public User findById(int id) {
         Optional<User> optionalUser = users.stream()
                 .filter(user -> user.getId() == id)
                 .findFirst();
 
-        return optionalUser;
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException("User with that ID wasn't found!");
+        }
+
+        return optionalUser.get();
     }
 }

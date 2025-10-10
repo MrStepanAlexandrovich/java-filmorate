@@ -10,5 +10,5 @@ public interface FilmStorage {
     Film add(Film film);
     Film update(Film film);
     List<Film> getFilms();
-    Optional<Film> findFilmById(int filmId);
+    Film findById(int filmId);
 }

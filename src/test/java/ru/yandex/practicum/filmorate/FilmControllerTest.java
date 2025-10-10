@@ -5,11 +5,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,13 +25,14 @@ public class FilmControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmController = new FilmController();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        filmController = new FilmController(filmStorage, new FilmService(filmStorage, new InMemoryUserStorage()));
     }
 
     @Test
     public void validationOnAddMethodTest() {
         Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 27),
-                Duration.ofMinutes(90));
+                Duration.ofMinutes(90), new HashSet<>());
 
         //Проверка валидации даты релиза
         ValidationException validationException = null;
@@ -64,14 +71,14 @@ public class FilmControllerTest {
     @Test
     public void validationOnUpdateMethod() {
         Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 29),
-                Duration.ofMinutes(90));
+                Duration.ofMinutes(90), new HashSet<>());
 
         filmController.addFilm(film);
 
         assertEquals(1, filmController.getFilms().size());
 
         Film newFilm = new Film(1, "name3", "descadsfad", LocalDate.of(1895, 1,
-                27), Duration.ofMinutes(90));
+                27), Duration.ofMinutes(90), new HashSet<>());
 
         //Проверка валидации даты релиза
         ValidationException validationException = assertThrows(ValidationException.class, ()
