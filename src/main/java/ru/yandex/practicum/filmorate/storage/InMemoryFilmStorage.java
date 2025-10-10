@@ -18,10 +18,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void delete(int id) {
-        Optional<Film> filmOptional = findFilmById(id);
-        if (filmOptional.isPresent()) {
-            films.remove(filmOptional.get());
-        }
+        films.remove(findById(id));
     }
 
     @Override
@@ -44,37 +41,37 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        Optional<Film> filmOptional = findFilmById(film.getId());
-        if (filmOptional.isPresent()) {
-            if (film.releaseDateIsValid()) {
-                if (film.durationIsValid()) {
-                    films.set(films.indexOf(filmOptional.get()), film);
-                    log.info("Film was successfully updated!");
-                    return film;
-                } else {
-                    log.info("Film wasn't updated because duration is negative!");
-                    throw new ValidationException("Film wasn't updated because duration is negative!");
-                }
+        Film oldFilm = findById(film.getId());
+        if (film.releaseDateIsValid()) {
+            if (film.durationIsValid()) {
+                films.set(films.indexOf(oldFilm), film);
+                log.info("Film was successfully updated!");
+                return film;
             } else {
-                log.info("Film wasn't updated because it's too old!");
-                throw new ValidationException("Film wasn't updated because it's too old!");
+                log.info("Film wasn't updated because duration is negative!");
+                throw new ValidationException("Film wasn't updated because duration is negative!");
             }
         } else {
-            log.info("Film with such ID wasn't found!");
-            throw new ValidationException("Film with such ID wasn't found!");
+            log.info("Film wasn't updated because it's too old!");
+            throw new ValidationException("Film wasn't updated because it's too old!");
         }
     }
+
 
     @Override
     public List<Film> getFilms() {
         return films;
     }
 
-    public Optional<Film> findFilmById(int id) {
+    public Film findById(int id) {
         Optional<Film> filmOptional = films.stream()
                 .filter(film1 -> film1.getId() == id)
                 .findAny();
 
-        return filmOptional;
+        if (filmOptional.isEmpty()) {
+            throw new FilmNotFoundException("Film with that ID wasn't found");
+        }
+
+        return filmOptional.get();
     }
 }

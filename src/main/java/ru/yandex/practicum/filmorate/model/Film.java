@@ -10,6 +10,7 @@ import lombok.Data;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Film.
@@ -32,7 +33,7 @@ public class Film {
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
 
-    private List<User> likedUsers;
+    private Set<User> likedUsers;
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))
@@ -41,5 +42,9 @@ public class Film {
 
     public boolean durationIsValid() {
         return duration.isPositive();
+    }
+
+    public int getLikesAmount() {
+        return likedUsers.size();
     }
 }

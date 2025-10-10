@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,9 +8,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -58,7 +56,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getUsersFriends(@PathVariable int id) {
+    public Set<User> getUsersFriends(@PathVariable int id) {
         User user = userStorage.findById(id);
         return user.getFriends();
     }
@@ -68,7 +66,7 @@ public class UserController {
             @PathVariable int id,
             @PathVariable int otherId
     ) {
-        return userService.getCommonFriends();
+        return userService.getCommonFriends(id, otherId);
     }
 
 
