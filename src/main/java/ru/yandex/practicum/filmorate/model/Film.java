@@ -4,36 +4,42 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Film.
  */
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Film {
+    @NonNull
     private int id;
 
+    @NonNull
     @NotBlank(message = "Name field must not be empty!")
     private String name;
 
+    @NonNull
     @Size(max = 200)
     private String description;
 
+    @NonNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
 
+    @NonNull
     @NotNull(message = "Duration must not be null!")
     @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     private Duration duration;
 
-    private Set<User> likedUsers;
+    private Set<Integer> likedUsers = new HashSet<>();
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))

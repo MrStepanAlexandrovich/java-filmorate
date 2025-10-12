@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import jakarta.validation.ValidationException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -69,7 +68,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .findAny();
 
         if (filmOptional.isEmpty()) {
-            throw new FilmNotFoundException("Film with that ID wasn't found");
+            throw new NotFoundException("Film with ID = " + id + " wasn't found");
         }
 
         return filmOptional.get();

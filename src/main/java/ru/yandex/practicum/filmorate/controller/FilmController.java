@@ -20,6 +20,7 @@ public class FilmController {
     @Autowired
     public FilmController(FilmStorage filmStorage, FilmService filmService) {
         this.filmStorage = filmStorage;
+        this.filmService = filmService;
     }
 
     @GetMapping

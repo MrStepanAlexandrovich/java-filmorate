@@ -29,7 +29,7 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public User add(User user) {
         if (!user.birthdayIsValid()) {
-            if (user.getName() == null) {
+            if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
             }
             user.setId(++counter);
@@ -50,8 +50,8 @@ public class InMemoryUserStorage implements UserStorage{
                 .filter(user1 -> user1.getId() == id)
                 .findFirst();
         if (optionalUser.isEmpty()) {
-            log.info("User with such ID wasn't found!");
-            throw new ValidationException("User with such ID wasn't found!");
+            log.info("User with ID = " + id + " wasn't found!");
+            throw new NotFoundException("User with ID = " + id + "wasn't found!");
         } else {
             if (!user.birthdayIsValid()) {
                 User oldUser = optionalUser.get();
@@ -77,7 +77,7 @@ public class InMemoryUserStorage implements UserStorage{
                 .findFirst();
 
         if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException("User with that ID wasn't found!");
+            throw new NotFoundException("User with that ID = " + id +  " wasn't found!");
         }
 
         return optionalUser.get();

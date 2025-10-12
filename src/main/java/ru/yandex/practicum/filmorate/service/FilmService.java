@@ -24,8 +24,8 @@ public class FilmService {
         User user = userStorage.findById(userId);
         Film film = filmStorage.findById(filmId);
 
-        film.getLikedUsers().add(user);
-        user.getLikedFilms().add(film);
+        film.getLikedUsers().add(userId);
+        user.getLikedFilms().add(filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
@@ -40,6 +40,10 @@ public class FilmService {
         List<Film> sortedFilms = new ArrayList<>(filmStorage.getFilms());
         sortedFilms.sort(Comparator.comparing(Film::getLikesAmount));
 
-        return sortedFilms.subList(0, count);
+        if (sortedFilms.size() < count) {
+            return sortedFilms.reversed();
+        } else {
+            return sortedFilms.subList(0, count).reversed();
+        }
     }
 }

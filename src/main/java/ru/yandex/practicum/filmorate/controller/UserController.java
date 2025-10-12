@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @RestController
@@ -56,9 +55,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Set<User> getUsersFriends(@PathVariable int id) {
-        User user = userStorage.findById(id);
-        return user.getFriends();
+    public List<User> getUsersFriends(@PathVariable int id) {
+        return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
@@ -68,6 +66,4 @@ public class UserController {
     ) {
         return userService.getCommonFriends(id, otherId);
     }
-
-
 }

@@ -28,8 +28,8 @@ public class UserControllerTest {
 
     @Test
     public void ifNameIsBlankLoginBecomeNameToo() {
-        User user = new User(1, "stepan@gmail.com", "name", null,
-                LocalDate.of(2000, 11, 21), new HashSet<>(), new HashSet<>());
+        User user = new User(1, "stepan@gmail.com", "name", "",
+                LocalDate.of(2000, 11, 21));
         userController.addUser(user);
         assertEquals(user.getName(), user.getLogin());
     }

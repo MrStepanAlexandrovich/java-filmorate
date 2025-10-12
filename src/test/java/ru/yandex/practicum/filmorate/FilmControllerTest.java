@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.NotFoundException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ public class FilmControllerTest {
     @Test
     public void validationOnAddMethodTest() {
         Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 27),
-                Duration.ofMinutes(90), new HashSet<>());
+                Duration.ofMinutes(90));
 
         //Проверка валидации даты релиза
         ValidationException validationException = null;
@@ -71,14 +72,14 @@ public class FilmControllerTest {
     @Test
     public void validationOnUpdateMethod() {
         Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 29),
-                Duration.ofMinutes(90), new HashSet<>());
+                Duration.ofMinutes(90));
 
         filmController.addFilm(film);
 
         assertEquals(1, filmController.getFilms().size());
 
         Film newFilm = new Film(1, "name3", "descadsfad", LocalDate.of(1895, 1,
-                27), Duration.ofMinutes(90), new HashSet<>());
+                27), Duration.ofMinutes(90));
 
         //Проверка валидации даты релиза
         ValidationException validationException = assertThrows(ValidationException.class, ()
@@ -100,10 +101,10 @@ public class FilmControllerTest {
         filmController.addFilm(film);
 
         newFilm.setDuration(Duration.ofMinutes(-90));
-        ValidationException validationException1 = assertThrows(ValidationException.class, ()
+        NotFoundException notFoundException1 = assertThrows(NotFoundException.class, ()
                 -> filmController.updateFilm(newFilm));
 
-        assertTrue(validationException1.getMessage().contains("Film with such ID wasn't found!"));
+        assertTrue(notFoundException1.getMessage().contains("Film with ID = " + newFilm.getId() + " wasn't found"));
         assertNotEquals(newFilm, filmController.getFilms().get(0));
     }
 }
