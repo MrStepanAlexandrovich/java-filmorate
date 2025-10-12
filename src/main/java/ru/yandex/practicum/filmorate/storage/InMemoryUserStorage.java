@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private int counter = 0;
     private List<User> users = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class InMemoryUserStorage implements UserStorage{
                 .findFirst();
 
         if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User with that ID = " + id +  " wasn't found!");
+            throw new NotFoundException("User with that ID = " + id + " wasn't found!");
         }
 
         return optionalUser.get();
