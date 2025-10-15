@@ -11,7 +11,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.time.Duration;
 import java.time.LocalDate;
