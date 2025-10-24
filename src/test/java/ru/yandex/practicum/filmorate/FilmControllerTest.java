@@ -7,6 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -19,7 +24,8 @@ public class FilmControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        filmController = new FilmController();
+        FilmStorage filmStorage = new InMemoryFilmStorage();
+        filmController = new FilmController(filmStorage, new FilmService(filmStorage, new InMemoryUserStorage()));
     }
 
     @Test
@@ -93,10 +99,10 @@ public class FilmControllerTest {
         filmController.addFilm(film);
 
         newFilm.setDuration(Duration.ofMinutes(-90));
-        ValidationException validationException1 = assertThrows(ValidationException.class, ()
+        NotFoundException notFoundException1 = assertThrows(NotFoundException.class, ()
                 -> filmController.updateFilm(newFilm));
 
-        assertTrue(validationException1.getMessage().contains("Film with such ID wasn't found!"));
+        assertTrue(notFoundException1.getMessage().contains("Film with ID = " + newFilm.getId() + " wasn't found"));
         assertNotEquals(newFilm, filmController.getFilms().get(0));
     }
 }
