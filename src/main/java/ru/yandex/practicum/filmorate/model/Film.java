@@ -41,6 +41,9 @@ public class Film {
 
     private Set<Integer> likedUsers = new HashSet<>();
 
+    @NotNull
+    private Rating rating;
+
     private Genre[] genres;
 
     public boolean releaseDateIsValid() {
