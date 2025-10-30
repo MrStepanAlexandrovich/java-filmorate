@@ -41,6 +41,8 @@ public class Film {
 
     private Set<Integer> likedUsers = new HashSet<>();
 
+    private Genre[] genres;
+
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))
                 || releaseDate.equals(LocalDate.of(1895, 1, 28));
