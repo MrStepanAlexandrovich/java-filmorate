@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class User {
     @NonNull
     private int id;

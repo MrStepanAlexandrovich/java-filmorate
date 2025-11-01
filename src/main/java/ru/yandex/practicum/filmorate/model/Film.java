@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,7 @@ import java.util.Set;
  */
 @Data
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class Film {
     @NonNull
     private int id;
