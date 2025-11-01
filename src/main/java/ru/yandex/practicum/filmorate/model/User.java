@@ -39,10 +39,8 @@ public class User {
 
     private Set<Integer> friends = new HashSet<>();
 
-    private Set<Integer> likedFilms = new HashSet<>();
-
     public boolean birthdayIsValid() {
-        return birthday.isAfter(LocalDate.now());
+        return birthday.isBefore(LocalDate.now());
     }
 
     public void addFriend(User user) {

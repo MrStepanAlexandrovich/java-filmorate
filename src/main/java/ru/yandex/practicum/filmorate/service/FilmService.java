@@ -25,7 +25,6 @@ public class FilmService {
         Film film = filmStorage.findById(filmId);
 
         film.getLikedUsers().add(userId);
-        user.getLikedFilms().add(filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
@@ -33,7 +32,6 @@ public class FilmService {
         Film film = filmStorage.findById(filmId);
 
         film.getLikedUsers().remove(user);
-        user.getLikedFilms().remove(film);
     }
 
     public List<Film> getMostPopularFilms(int count) {
