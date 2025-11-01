@@ -27,18 +27,18 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
-        String sqlQuery = "INSERT INTO films(name, description, releaseDate, duration, rating) VALUES(?, ?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO films(name, description, release_date, duration, mpa_id) VALUES(?, ?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getRating());
+                film.getMpaId());
         return film;
     }
 
     @Override
     public Film update(Film film) {
-        String sqlQuery = "UPDATE films SET name = ?, description = ?, releaseDate = ?, duration = ?, " +
-                "rating = ? WHERE id = ?";
+        String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
+                "mpa_id = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getRating(), film.getId());
+                film.getMpaId(), film.getId());
         return film;
     }
 
@@ -49,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film findById(int filmId) {
+    public Film find(int filmId) {
         String sqlQuery = "SELECT * FROM films WHERE id = ?";
         return jdbcTemplate.queryForObject(sqlQuery, new FilmRowMapper());
     }

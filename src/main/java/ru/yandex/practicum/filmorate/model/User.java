@@ -43,10 +43,6 @@ public class User {
         return birthday.isBefore(LocalDate.now());
     }
 
-    public void addFriend(User user) {
-        friends.add(user.getId());
-    }
-
     public void deleteFriend(int friendId) {
         friends.remove(friendId);
     }

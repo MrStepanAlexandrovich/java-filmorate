@@ -65,4 +65,18 @@ public class UserDbStorage implements UserStorage {
         List<User> users = jdbcTemplate.query(sqlQuery1, new UserRowMapper());
         return users;
     }
+
+    public UserDbStorage() {
+        super();
+    }
+
+    @Override
+    public void addFriend(int id, int friendId) {
+
+    }
+
+    @Override
+    public void deleteFriend(int id, int friendId) {
+
+    }
 }

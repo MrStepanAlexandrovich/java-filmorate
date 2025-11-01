@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -18,43 +17,22 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void delete(int id) {
-        films.remove(findById(id));
+        films.remove(find(id));
     }
 
     @Override
     public Film add(Film film) {
-        if (film.releaseDateIsValid()) {
-            if (film.durationIsValid()) {
-                film.setId(++counter);
-                films.add(film);
-                log.info("Film was successfully added!");
-                return film;
-            } else {
-                log.info("Film wasn't added because duration is negative!");
-                throw new ValidationException("Film wasn't added because duration is negative!");
-            }
-        } else {
-            log.info("Film wasn't added because it's too old!");
-            throw new ValidationException("Film wasn't added because it's too old!");
-        }
+        film.setId(++counter);
+        films.add(film);
+        log.info("Film was successfully added!");
+        return film;
     }
 
     @Override
     public Film update(Film film) {
-        Film oldFilm = findById(film.getId());
-        if (film.releaseDateIsValid()) {
-            if (film.durationIsValid()) {
-                films.set(films.indexOf(oldFilm), film);
-                log.info("Film was successfully updated!");
-                return film;
-            } else {
-                log.info("Film wasn't updated because duration is negative!");
-                throw new ValidationException("Film wasn't updated because duration is negative!");
-            }
-        } else {
-            log.info("Film wasn't updated because it's too old!");
-            throw new ValidationException("Film wasn't updated because it's too old!");
-        }
+        films.set(films.indexOf(film), film);
+        log.info("Film was successfully updated!");
+        return film;
     }
 
 
@@ -63,15 +41,15 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films;
     }
 
-    public Film findById(int id) {
+    public Film find(int id) {
         Optional<Film> filmOptional = films.stream()
                 .filter(film1 -> film1.getId() == id)
                 .findAny();
 
-        if (filmOptional.isEmpty()) {
-            throw new NotFoundException("Film with ID = " + id + " wasn't found");
+        if (filmOptional.isPresent()) {
+            return filmOptional.get();
+        } else {
+            return null;
         }
-
-        return filmOptional.get();
     }
 }

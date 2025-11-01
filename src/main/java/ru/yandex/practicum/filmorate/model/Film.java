@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -44,9 +46,10 @@ public class Film {
     private Set<Integer> likedUsers = new HashSet<>();
 
     @NotNull
-    private Rating rating;
+    @JsonProperty("mpa")
+    private int mpaId;
 
-    private Genre[] genres;
+    private int[] genresId;
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))

@@ -18,19 +18,11 @@ public class UserService {
     }
 
     public void addFriend(int id, int friendId) {
-        User user = userStorage.findById(id);
-        User friend = userStorage.findById(friendId);
-
-        user.addFriend(friend);
-        friend.addFriend(user);
+        userStorage.addFriend(id, friendId);
     }
 
     public void deleteFriend(int id, int friendId) {
-        User user = userStorage.findById(id);
-        User friend = userStorage.findById(friendId);
-
-        user.deleteFriend(friendId);
-        friend.deleteFriend(id);
+        userStorage.deleteFriend(id, friendId);
     }
 
     public List<User> getFriends(int userId) {
@@ -49,5 +41,21 @@ public class UserService {
                 .filter(user2FriendsId::contains)
                 .map(userStorage::findById)
                 .toList();
+    }
+
+    public User add(User user) {
+        return userStorage.add(user);
+    }
+
+    public List<User> getUsers() {
+        return userStorage.getUsers();
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
+    public void delete(int id) {
+        userStorage.delete(id);
     }
 }
