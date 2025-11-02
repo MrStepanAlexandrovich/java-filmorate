@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -50,10 +51,6 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        if (film.getId() == null) {
-            film.setId(0);
-        }
-
         if (!film.getGenres().isEmpty()) {
             if (!genresAreValid(film)) {
                 log.info("Non-existent genre was found");
@@ -125,5 +122,19 @@ public class FilmService {
                 .allMatch(genreIds::contains);
 
         return genresExist;
+    }
+
+    public List<MPARating> getMpas() {
+        return filmStorage.getMpas();
+    }
+
+    public MPARating getMpaById(int id) {
+        MPARating mpaRating = filmStorage.getMpa(id);
+
+        if (mpaRating == null) {
+            throw new NotFoundException("MPA rating with ID = " + id + " wasn't found");
+        } else {
+            return mpaRating;
+        }
     }
 }

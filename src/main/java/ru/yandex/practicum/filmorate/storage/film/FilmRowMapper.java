@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setName(rs.getString("name"));
         film.setDescription(rs.getString("description"));
         film.setReleaseDate(rs.getDate("release_Date").toLocalDate());
-        film.setDuration(Duration.ofMinutes(rs.getInt("duration")));
+        film.setDuration(Duration.of(rs.getInt("duration"), ChronoUnit.MINUTES));
         film.getMpa().setId(rs.getInt("mpa_id"));
 
 

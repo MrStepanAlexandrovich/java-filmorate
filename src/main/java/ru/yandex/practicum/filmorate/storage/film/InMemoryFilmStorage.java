@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MPARating;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,5 +56,15 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public List<Genre> getGenres() {
         return List.of();
+    }
+
+    @Override
+    public List<MPARating> getMpas() {
+        return List.of();
+    }
+
+    @Override
+    public MPARating getMpa(int id) {
+        return null;
     }
 }
