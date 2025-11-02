@@ -1,13 +1,14 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.jdbc.core.RowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 public class FilmRowMapper implements RowMapper<Film> {
     @Override
@@ -16,10 +17,10 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setId(rs.getInt("id"));
         film.setName(rs.getString("name"));
         film.setDescription(rs.getString("description"));
-        film.setReleaseDate(rs.getDate("releaseDate").toLocalDate());
+        film.setReleaseDate(rs.getDate("release_Date").toLocalDate());
         film.setDuration(Duration.ofMinutes(rs.getInt("duration")));
-        film.setMpaId(rs.getInt("mpa"));
-        film.setGenresId((int[]) rs.getArray("genres").getArray());
+        film.getMpa().setId(rs.getInt("mpa_id"));
+
 
         return film;
     }

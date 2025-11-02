@@ -1,14 +1,20 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
+@Slf4j
 @Repository
 @Primary
 public class FilmDbStorage implements FilmStorage {
@@ -27,10 +33,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
-        String sqlQuery = "INSERT INTO films(name, description, release_date, duration, mpa_id) VALUES(?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getMpaId());
-        return film;
+        String sqlQuery1 = "INSERT INTO films(name, description, release_date, duration, mpa_id) VALUES(?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sqlQuery1, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getMpa().getId());
+        String sqlQuery2 = "SELECT * FROM films WHERE id IN (SELECT MAX(id) FROM films)";
+        return jdbcTemplate.queryForObject(sqlQuery2, new FilmRowMapper());
     }
 
     @Override
@@ -38,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
                 "mpa_id = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getMpaId(), film.getId());
+                film.getMpa().getId(), film.getId());
         return film;
     }
 
@@ -51,6 +58,17 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film find(int filmId) {
         String sqlQuery = "SELECT * FROM films WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, new FilmRowMapper());
+        Film film = null;
+        try {
+            film = jdbcTemplate.queryForObject(sqlQuery, new FilmRowMapper(), filmId);
+        } catch (DataAccessException e) {
+            log.info("Query \"SELECT * FROM films WHERE id = "+ filmId + "\" returned empty result!");
+        }
+        return film;
+    }
+
+    public List<Genre> getGenres() {
+        String sqlQuery = "SELECT * FROM genres";
+        return jdbcTemplate.query(sqlQuery, new GenreRowMapper());
     }
 }

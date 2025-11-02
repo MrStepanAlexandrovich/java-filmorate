@@ -13,8 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Film.
@@ -23,14 +22,11 @@ import java.util.Set;
 @RequiredArgsConstructor
 @NoArgsConstructor
 public class Film {
-    @NonNull
-    private int id;
+    private Integer id;
 
-    @NonNull
     @NotBlank(message = "Name field must not be empty!")
     private String name;
 
-    @NonNull
     @Size(max = 200)
     private String description;
 
@@ -46,10 +42,9 @@ public class Film {
     private Set<Integer> likedUsers = new HashSet<>();
 
     @NotNull
-    @JsonProperty("mpa")
-    private int mpaId;
+    private MPARating mpa = new MPARating();
 
-    private int[] genresId;
+    private List<Genre> genres = new ArrayList<>();
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))
@@ -59,6 +54,8 @@ public class Film {
     public boolean durationIsValid() {
         return duration.isPositive();
     }
+
+
 
     public int getLikesAmount() {
         return likedUsers.size();

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private UserStorage userStorage;
     private UserService userService;
 
     @Autowired

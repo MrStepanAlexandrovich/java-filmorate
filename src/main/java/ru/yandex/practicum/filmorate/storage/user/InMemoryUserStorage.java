@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;

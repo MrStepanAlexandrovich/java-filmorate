@@ -1,5 +1,13 @@
-INSERT INTO mpa(id, mpa) VALUES(1, '0+');
-INSERT INTO mpa(id, mpa) VALUES(2, '6+');
-INSERT INTO mpa(id, mpa) VALUES(3, '12+');
-INSERT INTO mpa(id, mpa) VALUES(4, '16+');
-INSERT INTO mpa(id, mpa) VALUES(5, '18+');
+INSERT INTO mpa(id, mpa) VALUES(1, '0+') ON CONFLICT DO NOTHING;
+INSERT INTO mpa(id, mpa) VALUES(2, '6+') ON CONFLICT DO NOTHING;
+INSERT INTO mpa(id, mpa) VALUES(3, '12+') ON CONFLICT DO NOTHING;
+INSERT INTO mpa(id, mpa) VALUES(4, '16+') ON CONFLICT DO NOTHING;
+INSERT INTO mpa(id, mpa) VALUES(5, '18+') ON CONFLICT DO NOTHING;
+
+INSERT INTO genres(id, name) VALUES(1, 'Comedy') ON CONFLICT DO NOTHING;
+INSERT INTO genres(id, name) VALUES(2, 'Action') ON CONFLICT DO NOTHING;
+INSERT INTO genres(id, name) VALUES(3, 'Documental') ON CONFLICT DO NOTHING;
+INSERT INTO genres(id, name) VALUES(4, 'Drama') ON CONFLICT DO NOTHING;
+INSERT INTO genres(id, name) VALUES(5, 'Thriller') ON CONFLICT DO NOTHING;
+INSERT INTO genres(id, name) VALUES(6, 'Cartoon') ON CONFLICT DO NOTHING;
+

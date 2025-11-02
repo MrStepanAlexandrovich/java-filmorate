@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
@@ -33,8 +34,8 @@ public class FilmService {
 
     public void deleteLike(int userId, int filmId) {
         filmStorage.find(filmId)
-                        .getLikedUsers()
-                        .remove(userId);
+                .getLikedUsers()
+                .remove(userId);
     }
 
     public List<Film> getMostPopularFilms(int count) {
@@ -49,27 +50,55 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
+        if (film.getId() == null) {
+            film.setId(0);
+        }
+
+        if (!film.getGenres().isEmpty()) {
+            if (!genresAreValid(film)) {
+                log.info("Non-existent genre was found");
+                throw new NotFoundException("Non-existent genre was found");
+            }
+        }
+
         if (!film.releaseDateIsValid()) {
             log.info("Film wasn't added because it's too old!");
             throw new ValidationException("Film wasn't added because it's too old!");
         } else if (!film.durationIsValid()) {
             log.info("Film wasn't added because duration is negative!");
             throw new ValidationException("Film wasn't added because duration is negative!");
+        } else if (!film.getMpa().idIsValid()) {
+            log.info("That MPA rating wasn't found");
+            throw new NotFoundException("That MPA rating wasn't found");
         } else {
             return filmStorage.add(film);
         }
     }
 
     public Film updateFilm(Film film) {
-        if (filmStorage.find(film.getId()) == null) {
-            log.info("Film with ID = " + film.getId() + " wasn't found!");
-            throw new NotFoundException("Film with ID = " + film.getId() + " wasn't found!");
-        } else if (!film.releaseDateIsValid()) {
+        if (!film.getGenres().isEmpty()) {
+            if (!genresAreValid(film)) {
+                log.info("Non-existent genre was found");
+                throw new NotFoundException("Non-existent genre was found");
+            }
+        }
+
+        findById(film.getId());
+
+        if (film.getId() == null) {
+            log.info("Film must have an ID!");
+            throw new ValidationException("Film must have an ID!");
+        }
+
+        if (!film.releaseDateIsValid()) {
             log.info("Film wasn't updated because it's too old!");
             throw new ValidationException("Film wasn't updated because it's too old!");
-        } else if (film.durationIsValid()) {
+        } else if (!film.durationIsValid()) {
             log.info("Film wasn't updated because duration is negative!");
             throw new ValidationException("Film wasn't updated because duration is negative!");
+        } else if (!film.getMpa().idIsValid()) {
+            log.info("That MPA rating wasn't found");
+            throw new NotFoundException("That MPA rating wasn't found");
         } else {
             return filmStorage.update(film);
         }
@@ -83,5 +112,18 @@ public class FilmService {
             log.info("Film with ID = " + id + " wasn't found");
             throw new NotFoundException("Film with ID = " + id + " wasn't found");
         }
+    }
+
+    public boolean genresAreValid(Film film) {
+        List<Integer> genreIds = filmStorage.getGenres()
+                .stream()
+                .map(Genre::getId)
+                .toList();
+        boolean genresExist = film.getGenres()
+                .stream()
+                .map(Genre::getId)
+                .allMatch(genreIds::contains);
+
+        return genresExist;
     }
 }
