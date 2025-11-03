@@ -31,15 +31,14 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS friendships
 (
-    user1_id INTEGER NOT NULL,
-    user2_id INTEGER NOT NULL,
-    status   VARCHAR NOT NULL,
-    PRIMARY KEY (user1_id, user2_id),
-    FOREIGN KEY (user1_id)
+    user_id_from INTEGER NOT NULL,
+    user_id_to INTEGER NOT NULL,
+    PRIMARY KEY (user_id_from, user_id_to),
+    FOREIGN KEY (user_id_from)
         REFERENCES users (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (user2_id)
+    FOREIGN KEY ( user_id_to)
         REFERENCES users (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE

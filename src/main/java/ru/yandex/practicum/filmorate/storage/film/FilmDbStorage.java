@@ -179,4 +179,15 @@ public class FilmDbStorage implements FilmStorage {
         film.setMpa(getMpa(film.getMpa().getId()));
         return film;
     }
+
+    @Override
+    public void deleteLike(int userId, int filmId) {
+        String sqlQuery = "DELETE FROM liked_films WHERE user_id = ? AND film_id = ?";
+        try {
+            jdbcTemplate.update(sqlQuery, userId, filmId);
+        } catch (DataAccessException e) {
+            log.info("Like not found!");
+            throw new NotFoundException("Like not found!");
+        }
+    }
 }

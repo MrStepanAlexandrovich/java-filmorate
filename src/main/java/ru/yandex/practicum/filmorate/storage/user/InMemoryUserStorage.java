@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -98,5 +99,10 @@ public class InMemoryUserStorage implements UserStorage {
 
         user.deleteFriend(friendId);
         friend.deleteFriend(id);
+    }
+
+    @Override
+    public Set<User> getFriends(int id) {
+        return Set.of();
     }
 }

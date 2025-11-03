@@ -26,4 +26,6 @@ public interface FilmStorage {
     Genre getGenre(int id);
 
     List<Genre> getAllGenres();
+
+    void deleteLike(int userId, int filmId);
 }

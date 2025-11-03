@@ -78,4 +78,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Genre> getAllGenres() {
         return List.of();
     }
+
+    @Override
+    public void deleteLike(int userId, int filmId) {
+
+    }
 }

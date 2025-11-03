@@ -7,9 +7,13 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @Primary
@@ -35,7 +39,9 @@ public class UserDbStorage implements UserStorage {
         } else {
             String sqlQuery = "INSERT INTO users(name, login, email, birthday) VALUES(?, ?, ?, ?)";
             jdbcTemplate.update(sqlQuery, user.getName(), user.getLogin(), user.getEmail(), user.getBirthday());
-            return user;
+            String sqlQuery2 = "SELECT * FROM users WHERE id = (SELECT MAX(id) FROM users)";
+
+            return jdbcTemplate.queryForObject(sqlQuery2, new UserRowMapper());
         }
     }
 
@@ -55,6 +61,7 @@ public class UserDbStorage implements UserStorage {
             user = jdbcTemplate.queryForObject(sqlQuery, new UserRowMapper(), id);
         } catch (DataAccessException e) {
             log.trace("User with ID = " + id + " wasn't found!");
+            throw new NotFoundException("User with ID = " + id + " wasn't found!");
         }
         return user;
     }
@@ -72,12 +79,30 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int id, int friendId) {
-
+    public void addFriend(int userIdFrom, int userIdTo) {
+        findById(userIdFrom);
+        findById(userIdTo);
+        String sqlQuery = "INSERT INTO friendships(user_id_from, user_id_to) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, userIdFrom, userIdTo);
     }
 
     @Override
-    public void deleteFriend(int id, int friendId) {
+    public void deleteFriend(int userIdFrom, int userIdTo) {
+        findById(userIdFrom);
+        findById(userIdTo);
 
+        String sqlQuery = "DELETE FROM friendships WHERE user_id_from = ? AND user_id_to = ?";
+        jdbcTemplate.update(sqlQuery, userIdFrom, userIdTo);
+    }
+
+    @Override
+    public Set<User> getFriends(int id) {
+        findById(id);
+        String sqlQuery = "SELECT u.*\n" +
+                "FROM FRIENDSHIPS AS f\n" +
+                "RIGHT JOIN USERS AS u ON f.USER_ID_TO = u.ID\n" +
+                "WHERE f.USER_ID_FROM = ?";
+
+        return new HashSet<>(jdbcTemplate.query(sqlQuery, new UserRowMapper(), id));
     }
 }

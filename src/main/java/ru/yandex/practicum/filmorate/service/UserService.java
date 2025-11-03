@@ -25,12 +25,9 @@ public class UserService {
         userStorage.deleteFriend(id, friendId);
     }
 
-    public List<User> getFriends(int userId) {
-        Set<Integer> friendsID = userStorage.findById(userId).getFriends();
-
-        return friendsID.stream()
-                .map(userStorage::findById)
-                .toList();
+    public Set<User> getFriends(int userId) {
+        Set<User> friends = userStorage.getFriends(userId);
+        return friends;
     }
 
     public List<User> getCommonFriends(int id, int friendId) {

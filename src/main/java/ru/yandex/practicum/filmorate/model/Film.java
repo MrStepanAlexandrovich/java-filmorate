@@ -70,8 +70,6 @@ public class Film {
         return duration.isPositive();
     }
 
-
-
     public int getLikesAmount() {
         return likedUsers.size();
     }
