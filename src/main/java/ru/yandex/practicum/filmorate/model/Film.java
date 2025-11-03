@@ -52,12 +52,14 @@ public class Film {
     @JsonSerialize(using = DurationSerializer.class)
     private Duration duration;
 
-    private Set<Integer> likedUsers = new HashSet<>();
+    private List<User> likedUsers = new ArrayList<>();
 
     @NotNull
     private MPARating mpa = new MPARating();
 
-    private List<Genre> genres = new ArrayList<>();
+    private Set<Genre> genres = new HashSet<>();
+
+    private int likesAmount;
 
     public boolean releaseDateIsValid() {
         return releaseDate.isAfter(LocalDate.of(1895, 1, 28))

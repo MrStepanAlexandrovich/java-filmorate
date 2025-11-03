@@ -13,7 +13,7 @@ public class MPARowMapper implements RowMapper<MPARating> {
     public MPARating mapRow(ResultSet rs, int rowNum) throws SQLException {
         MPARating mpaRating = new MPARating();
         mpaRating.setId(rs.getInt("id"));
-        mpaRating.setRating("mpa");
+        mpaRating.setName(rs.getString("name"));
 
         return mpaRating;
     }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,30 +18,36 @@ import java.util.*;
 @Slf4j
 @Service
 public class FilmService {
+    private final JdbcTemplate jdbcTemplate;
     FilmStorage filmStorage;
     UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, JdbcTemplate jdbcTemplate) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public void likeFilm(int userId, int filmId) {
         User user = userStorage.findById(userId);
-        Film film = filmStorage.find(filmId);
+        Film film = filmStorage.getFilm(filmId);
 
-        film.getLikedUsers().add(userId);
+        film.getLikedUsers().add(user);
+
+        String sqlQuery = "INSERT INTO liked_films(user_id, film_id) VALUES(?, ?)";
+
+        jdbcTemplate.update(sqlQuery, userId, filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
-        filmStorage.find(filmId)
+        filmStorage.getFilm(filmId)
                 .getLikedUsers()
                 .remove(userId);
     }
 
     public List<Film> getMostPopularFilms(int count) {
-        List<Film> sortedFilms = new ArrayList<>(filmStorage.getFilms());
+        List<Film> sortedFilms = new ArrayList<>(filmStorage.getAllFilms());
         sortedFilms.sort(Comparator.comparing(Film::getLikesAmount));
 
         if (sortedFilms.size() < count) {
@@ -80,7 +87,7 @@ public class FilmService {
             }
         }
 
-        findById(film.getId());
+        getFilm(film.getId()); //проверка существования фильма
 
         if (film.getId() == null) {
             log.info("Film must have an ID!");
@@ -101,18 +108,9 @@ public class FilmService {
         }
     }
 
-    public Film findById(int id) {
-        Film film = filmStorage.find(id);
-        if (film != null) {
-            return film;
-        } else {
-            log.info("Film with ID = " + id + " wasn't found");
-            throw new NotFoundException("Film with ID = " + id + " wasn't found");
-        }
-    }
 
     public boolean genresAreValid(Film film) {
-        List<Integer> genreIds = filmStorage.getGenres()
+        List<Integer> genreIds = filmStorage.getAllGenres()
                 .stream()
                 .map(Genre::getId)
                 .toList();
@@ -136,5 +134,17 @@ public class FilmService {
         } else {
             return mpaRating;
         }
+    }
+
+    public Genre getGenre(int id) {
+        return filmStorage.getGenre(id);
+    }
+
+    public List<Genre> getAllGenres() {
+        return filmStorage.getAllGenres();
+    }
+
+    public Film getFilm(int id) {
+        return filmStorage.getFilm(id);
     }
 }

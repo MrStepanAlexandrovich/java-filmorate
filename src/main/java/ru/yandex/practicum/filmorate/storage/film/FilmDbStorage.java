@@ -6,12 +6,12 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,13 +57,17 @@ public class FilmDbStorage implements FilmStorage {
                 .map(Genre::getId)
                 .toList();
 
-        List<Genre> genres = filmFromDb.getGenres();
+
+        Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
+                genres.addAll(filmFromDb.getGenres());
 
         String getGenreByIdQuery = "SELECT * FROM genres WHERE id = ?";
 
         for (Integer id : genreIds) {
             genres.add(jdbcTemplate.queryForObject(getGenreByIdQuery, new GenreRowMapper(), id));
         }
+
+        filmFromDb.setGenres(genres);
 
         return filmFromDb;
     }
@@ -78,17 +82,27 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilms() {
+    public List<Film> getAllFilms() {
         List<Film> films = new ArrayList<>();
         String sqlQuery = "SELECT * FROM films";
         films = jdbcTemplate.query(sqlQuery, new FilmRowMapper());
 
         return films.stream()
-                .peek(film -> film.setGenres(getGenres()))
+                .peek(film -> {
+                    String getGenresIdQuery = "SELECT genre_id FROM films_genres WHERE film_id = ?";
+                    List<Integer> genreIds = jdbcTemplate.queryForList(getGenresIdQuery, Integer.class, film.getId());
+                    Set<Genre> genres = new HashSet<>();
+                    String getGenresByIdQuery = "SELECT * FROM genres WHERE id = ?";
+                    for (Integer id : genreIds) {
+                        genres.add(jdbcTemplate.queryForObject(getGenresByIdQuery, new GenreRowMapper(), id));
+                    }
+
+                    film.setGenres(genres);
+                })
                 .collect(Collectors.toList());
     }
 
-    @Override
+    /*@Override
     public Film find(int filmId) {
         String sqlQuery = "SELECT * FROM films WHERE id = ?";
         Film film = null;
@@ -99,12 +113,7 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         return film;
-    }
-
-    public List<Genre> getGenres() {
-        String sqlQuery = "SELECT * FROM genres";
-        return jdbcTemplate.query(sqlQuery, new GenreRowMapper());
-    }
+    }*/
 
     public List<MPARating> getMpas() {
         String sqlQuery = "SELECT * FROM MPA";
@@ -123,15 +132,51 @@ public class FilmDbStorage implements FilmStorage {
         return mpaRating;
     }
 
-    private List<Genre> getGenresById(Film film) {
-        List<Genre> genres = new ArrayList<>();
-        String sqlQuery = "SELECT genre_id FROM films_genres WHERE film_id = ?";
+    public Genre getGenre(int id) {
+        String sqlQuery = "SELECT * FROM genres WHERE id = ?";
         try {
-            genres = jdbcTemplate.query(sqlQuery, new GenreRowMapper(), film.getId());
+            return jdbcTemplate.queryForObject(sqlQuery, new GenreRowMapper(), id);
         } catch (DataAccessException e) {
-            log.trace("Film with ID = " + film.getId() + " doesn't have genres");
+            log.info("Genre with ID = " + id + " wasn't found");
+            throw new NotFoundException("Genre with ID = " + id + " wasn't found");
+        }
+    }
+
+    public List<Genre> getAllGenres() {
+        String sqlQuery = "SELECT * FROM genres";
+        return jdbcTemplate.query(sqlQuery, new GenreRowMapper());
+    }
+
+    @Override
+    public Film getFilm(int id) {
+        Film film;
+        String sqlQuery = "SELECT * FROM films WHERE id = ?";
+
+        try {
+            film = jdbcTemplate.queryForObject(sqlQuery, new FilmRowMapper(), id);
+        } catch (DataAccessException e) {
+            log.info("Film with ID = " + id + " wasn't found");
+            throw new NotFoundException("Film with ID = " + id + " wasn't found");
         }
 
-        return genres;
+        String sqlQuery2 = "SELECT g.id, g.name\n" +
+                "FROM FILMS_GENRES AS f\n" +
+                "LEFT JOIN GENRES AS g on g.ID = f.GENRE_ID\n" +
+                "WHERE f.FILM_ID = ?";
+
+        Set<Genre> genres = null;
+        try {
+            genres = jdbcTemplate.query(sqlQuery2, new GenreRowMapper(), id)
+                    .stream()
+                    .sorted(Comparator.comparing(Genre::getId))
+                    .collect(Collectors.toSet());
+        } catch (DataAccessException e) {
+            log.info("Genres weren't found");
+        }
+
+        film.setGenres(genres);
+
+        film.setMpa(getMpa(film.getMpa().getId()));
+        return film;
     }
 }

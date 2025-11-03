@@ -22,7 +22,6 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setDuration(Duration.of(rs.getInt("duration"), ChronoUnit.MINUTES));
         film.getMpa().setId(rs.getInt("mpa_id"));
 
-
         return film;
     }
 }

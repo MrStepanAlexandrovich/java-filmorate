@@ -13,13 +13,17 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    List<Film> getFilms();
+    Film getFilm(int id);
 
-    Film find(int filmId);
+    List<Film> getAllFilms();
 
-    List<Genre> getGenres();
+  //  Film find(int filmId);
 
     List<MPARating> getMpas();
 
     MPARating getMpa(int id);
+
+    Genre getGenre(int id);
+
+    List<Genre> getAllGenres();
 }

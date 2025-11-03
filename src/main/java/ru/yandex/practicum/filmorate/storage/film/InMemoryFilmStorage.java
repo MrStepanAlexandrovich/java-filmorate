@@ -38,7 +38,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
 
     @Override
-    public List<Film> getFilms() {
+    public List<Film> getAllFilms() {
         return films;
     }
 
@@ -54,8 +54,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    public List<Genre> getGenres() {
-        return List.of();
+    @Override
+    public Film getFilm(int id) {
+        return null;
     }
 
     @Override
@@ -66,5 +67,15 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public MPARating getMpa(int id) {
         return null;
+    }
+
+    @Override
+    public Genre getGenre(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Genre> getAllGenres() {
+        return List.of();
     }
 }

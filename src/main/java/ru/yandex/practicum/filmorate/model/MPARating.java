@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Range;
 @Data
 public class MPARating {
     private int id;
-    private String rating;
+    private String name;
 
     public boolean idIsValid() {
         return id <= 5 && id >= 1;
