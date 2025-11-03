@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS genres
 
 CREATE TABLE IF NOT EXISTS films_genres
 (
-    genre_id INTEGER PRIMARY KEY,
+    genre_id INTEGER,
     film_id  INTEGER NOT NULL,
     FOREIGN KEY (genre_id)
         REFERENCES genres (id)

@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Repository
 @Primary
+@Slf4j
 public class UserDbStorage implements UserStorage {
     private JdbcTemplate jdbcTemplate;
 
@@ -46,9 +49,14 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User findById(int id) {
+        User user = null;
         String sqlQuery = "SELECT * FROM users WHERE id = ?";
-
-        return jdbcTemplate.queryForObject(sqlQuery, new UserRowMapper(), id);
+        try {
+            user = jdbcTemplate.queryForObject(sqlQuery, new UserRowMapper(), id);
+        } catch (DataAccessException e) {
+            log.trace("User with ID = " + id + " wasn't found!");
+        }
+        return user;
     }
 
     @Override
