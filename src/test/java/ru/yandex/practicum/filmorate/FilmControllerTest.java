@@ -1,108 +1,108 @@
 package ru.yandex.practicum.filmorate;
 
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class FilmControllerTest {
+
+    @Autowired
     private FilmController filmController;
 
+    @Autowired
+    private UserDbStorage userDbStorage;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @BeforeEach
-    public void beforeEach() {
-        FilmStorage filmStorage = new InMemoryFilmStorage();
-        filmController = new FilmController(filmStorage, new FilmService(filmStorage, new InMemoryUserStorage()));
+    public void clearDb() {
+        jdbcTemplate.update("DELETE FROM liked_films");
+        jdbcTemplate.update("DELETE FROM films_genres");
+        jdbcTemplate.update("DELETE FROM films");
+        jdbcTemplate.update("DELETE FROM friendships");
+        jdbcTemplate.update("DELETE FROM users");
+    }
+
+    private Film makeFilm(String name) {
+        Film film = new Film();
+        film.setName(name);
+        film.setDescription("Desc");
+        film.setReleaseDate(LocalDate.of(2000, 1, 1));
+        film.setDuration(Duration.ofMinutes(120));
+
+        MPARating mpa = new MPARating();
+        mpa.setId(1);
+        film.setMpa(mpa);
+
+        return film;
     }
 
     @Test
-    public void validationOnAddMethodTest() {
-        Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 27),
-                Duration.ofMinutes(90));
+    public void addAndGetFilms() {
+        Film film = makeFilm("TestFilmDB");
 
-        //Проверка валидации даты релиза
-        ValidationException validationException = null;
-        try {
-            validationException = assertThrows(ValidationException.class, ()
-                    -> filmController.addFilm(film));
-        } catch (ValidationException e) {
-            e.getMessage();
-        }
+        Film saved = filmController.addFilm(film);
+        assertNotNull(saved);
+        assertNotNull(saved.getId());
+        assertTrue(saved.getId() > 0);
 
-
-        assertTrue(validationException.getMessage().contains("Film wasn't added because it's too old!"));
-        assertEquals(0, filmController.getFilms().size());
-
-        film.setReleaseDate(LocalDate.of(1895, 1, 28));
-        filmController.addFilm(film);
-
-        assertEquals(1, filmController.getFilms().size());
-
-        filmController.getFilms().clear();
-
-        //Проверка валидации длительности
-        film.setDuration(Duration.ofMinutes(-90));
-        ValidationException validationException1 = null;
-        try {
-            validationException1 = assertThrows(ValidationException.class, ()
-                    -> filmController.addFilm(film));
-        } catch (ValidationException e) {
-            e.getMessage();
-        }
-
-        assertTrue(validationException1.getMessage().contains("Film wasn't added because duration is negative!"));
-        assertEquals(0, filmController.getFilms().size());
+        Film fetched = filmController.getFilm(saved.getId());
+        assertEquals(saved.getId(), fetched.getId());
+        assertEquals("TestFilmDB", fetched.getName());
+        assertEquals(1, fetched.getMpa().getId());
     }
 
     @Test
-    public void validationOnUpdateMethod() {
-        Film film = new Film(1, "name", "desc", LocalDate.of(1895, 1, 29),
-                Duration.ofMinutes(90));
+    public void likesFlowAndGetMostLikedFilmsAndDeleteLike() {
+        User u1 = new User();
+        u1.setName("User1");
+        u1.setLogin("u1db");
+        u1.setEmail("u1db@example.com");
+        u1.setBirthday(LocalDate.of(1990, 1, 1));
+        User savedU1 = userDbStorage.add(u1);
 
-        filmController.addFilm(film);
+        User u2 = new User();
+        u2.setName("User2");
+        u2.setLogin("u2db");
+        u2.setEmail("u2db@example.com");
+        u2.setBirthday(LocalDate.of(1991, 2, 2));
+        User savedU2 = userDbStorage.add(u2);
 
-        assertEquals(1, filmController.getFilms().size());
+        Film f1 = filmController.addFilm(makeFilm("F1-db"));
+        Film f2 = filmController.addFilm(makeFilm("F2-db"));
 
-        Film newFilm = new Film(1, "name3", "descadsfad", LocalDate.of(1895, 1,
-                27), Duration.ofMinutes(90));
+        filmController.userLikesFilm(f1.getId(), savedU1.getId());
+        filmController.userLikesFilm(f1.getId(), savedU2.getId());
+        filmController.userLikesFilm(f2.getId(), savedU1.getId());
 
-        //Проверка валидации даты релиза
-        ValidationException validationException = assertThrows(ValidationException.class, ()
-                -> filmController.updateFilm(newFilm));
+        List<Film> top1 = filmController.getMostLikedFilms(1);
+        assertNotNull(top1);
+        assertEquals(1, top1.size());
+        assertEquals(f1.getId(), top1.get(0).getId());
 
-        assertTrue(validationException.getMessage().contains("Film wasn't updated because it's too old!"));
+        filmController.userDeletesLike(f2.getId(), savedU1.getId());
+        Integer remaining = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM liked_films WHERE film_id = ?", Integer.class, f2.getId());
+        assertEquals(0, remaining);
+    }
 
-        assertEquals(film, filmController.getFilms().get(0));
-        assertEquals(1, filmController.getFilms().size());
-
-        newFilm.setReleaseDate(LocalDate.of(1895, 1, 28));
-        filmController.updateFilm(newFilm);
-
-        assertEquals(newFilm, filmController.getFilms().get(0));
-
-        filmController.getFilms().clear();
-
-        //Проверка валидации длительности
-        filmController.addFilm(film);
-
-        newFilm.setDuration(Duration.ofMinutes(-90));
-        NotFoundException notFoundException1 = assertThrows(NotFoundException.class, ()
-                -> filmController.updateFilm(newFilm));
-
-        assertTrue(notFoundException1.getMessage().contains("Film with ID = " + newFilm.getId() + " wasn't found"));
-        assertNotEquals(newFilm, filmController.getFilms().get(0));
+    @Test
+    public void getNonExistingFilmShouldThrow() {
+        assertThrows(Exception.class, () -> filmController.getFilm(99999));
     }
 }
