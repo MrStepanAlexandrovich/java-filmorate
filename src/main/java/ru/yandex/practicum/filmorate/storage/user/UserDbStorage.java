@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Repository
@@ -139,7 +140,7 @@ public class UserDbStorage implements UserStorage {
                 "RIGHT JOIN USERS AS u ON f.USER_ID_TO = u.ID\n" +
                 "WHERE f.USER_ID_FROM = ?";
 
-        return new HashSet<>(jdbcTemplate.query(con -> {
+        return new TreeSet<>(jdbcTemplate.query(con -> {
             var ps = con.prepareStatement(sqlQuery);
             ps.setInt(1, id);
             return ps;

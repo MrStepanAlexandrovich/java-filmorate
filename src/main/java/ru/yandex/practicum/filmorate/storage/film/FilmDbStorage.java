@@ -143,7 +143,7 @@ public class FilmDbStorage implements FilmStorage {
 
                     film.setGenres(genres);
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).reversed();
     }
 
     public List<MPARating> getMpas() {
