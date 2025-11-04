@@ -44,15 +44,8 @@ public class FilmService {
         filmStorage.deleteLike(userId, filmId);
     }
 
-    public List<Film> getMostPopularFilms(int count) {
-        List<Film> sortedFilms = new ArrayList<>(filmStorage.getAllFilms());
-        sortedFilms.sort(Comparator.comparing(Film::getLikesAmount));
-
-        if (sortedFilms.size() < count) {
-            return sortedFilms.reversed();
-        } else {
-            return sortedFilms.subList(0, count).reversed();
-        }
+    public List<Film> getMostLikedFilms(int count) {
+        return filmStorage.getMostLikedFilms(count);
     }
 
     public Film addFilm(Film film) {

@@ -30,14 +30,8 @@ public class UserService {
         return friends;
     }
 
-    public List<User> getCommonFriends(int id, int friendId) {
-        Set<Integer> user1FriendsId = userStorage.findById(id).getFriends();
-        Set<Integer> user2FriendsId = userStorage.findById(friendId).getFriends();
-
-        return user1FriendsId.stream()
-                .filter(user2FriendsId::contains)
-                .map(userStorage::findById)
-                .toList();
+    public Set<User> getCommonFriends(int user1Id, int user2Id) {
+        return userStorage.getCommonFriends(user1Id, user2Id);
     }
 
     public User add(User user) {

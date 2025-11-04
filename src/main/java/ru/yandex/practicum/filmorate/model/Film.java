@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -52,6 +53,7 @@ public class Film {
     @JsonSerialize(using = DurationSerializer.class)
     private Duration duration;
 
+    @JsonIgnore
     private List<User> likedUsers = new ArrayList<>();
 
     @NotNull
@@ -59,6 +61,7 @@ public class Film {
 
     private Set<Genre> genres = new HashSet<>();
 
+    @JsonIgnore
     private int likesAmount;
 
     public boolean releaseDateIsValid() {

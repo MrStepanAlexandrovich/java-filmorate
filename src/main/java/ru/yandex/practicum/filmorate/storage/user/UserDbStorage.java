@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 public class UserDbStorage implements UserStorage {
     private JdbcTemplate jdbcTemplate;
 
+    public UserDbStorage() {
+        super();
+    }
+
     @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -47,6 +51,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
+        findById(user.getId());
         String sqlQuery = "UPDATE users SET name = ?, email = ?, login = ?, birthday = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(),
                 user.getId());
@@ -74,9 +79,6 @@ public class UserDbStorage implements UserStorage {
         return users;
     }
 
-    public UserDbStorage() {
-        super();
-    }
 
     @Override
     public void addFriend(int userIdFrom, int userIdTo) {
@@ -104,5 +106,15 @@ public class UserDbStorage implements UserStorage {
                 "WHERE f.USER_ID_FROM = ?";
 
         return new HashSet<>(jdbcTemplate.query(sqlQuery, new UserRowMapper(), id));
+    }
+
+    @Override
+    public Set<User> getCommonFriends(int user1Id, int user2Id) {
+        Set<User> friendsSet1 = getFriends(user1Id);
+        Set<User> friendsSet2 = getFriends(user2Id);
+
+        return friendsSet1.stream()
+                .filter(friendsSet2::contains)
+                .collect(Collectors.toSet());
     }
 }

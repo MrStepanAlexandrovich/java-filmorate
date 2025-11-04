@@ -105,4 +105,9 @@ public class InMemoryUserStorage implements UserStorage {
     public Set<User> getFriends(int id) {
         return Set.of();
     }
+
+    @Override
+    public Set<User> getCommonFriends(int user1Id, int user2Id) {
+        return Set.of();
+    }
 }

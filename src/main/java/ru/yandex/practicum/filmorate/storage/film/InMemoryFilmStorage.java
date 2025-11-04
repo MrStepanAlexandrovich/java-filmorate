@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.MPARating;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -82,5 +83,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void deleteLike(int userId, int filmId) {
 
+    }
+
+    @Override
+    public List<Film> getMostLikedFilms(int count) {
+        return List.of();
     }
 }

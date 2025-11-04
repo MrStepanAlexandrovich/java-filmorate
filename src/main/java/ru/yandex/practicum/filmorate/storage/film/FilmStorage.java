@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FilmStorage {
     void delete(int id);
@@ -28,4 +29,6 @@ public interface FilmStorage {
     List<Genre> getAllGenres();
 
     void deleteLike(int userId, int filmId);
+
+    List<Film> getMostLikedFilms(int count);
 }

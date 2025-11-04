@@ -190,4 +190,16 @@ public class FilmDbStorage implements FilmStorage {
             throw new NotFoundException("Like not found!");
         }
     }
+
+    @Override
+    public List<Film> getMostLikedFilms(int count) {
+        String sqlQuery = "SELECT l.FILM_ID, COUNT(l.FILM_ID), f.*\n" +
+                "FROM LIKED_FILMS AS l\n" +
+                "LEFT JOIN FILMS AS f ON l.FILM_ID = f.ID\n" +
+                "GROUP BY l.FILM_ID\n" +
+                "ORDER BY COUNT(l.FILM_ID) DESC\n" +
+                "LIMIT ?;\n";
+
+        return jdbcTemplate.query(sqlQuery, new FilmRowMapper(), count);
+    }
 }
