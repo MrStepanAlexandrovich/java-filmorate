@@ -33,7 +33,11 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void delete(int id) {
         String sqlQuery = "DELETE FROM users WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        jdbcTemplate.update(con -> {
+            var ps = con.prepareStatement(sqlQuery);
+            ps.setInt(1, id);
+            return ps;
+        });
     }
 
     @Override
@@ -42,10 +46,18 @@ public class UserDbStorage implements UserStorage {
             throw new ValidationException("Incorrect birthday date!");
         } else {
             String sqlQuery = "INSERT INTO users(name, login, email, birthday) VALUES(?, ?, ?, ?)";
-            jdbcTemplate.update(sqlQuery, user.getName(), user.getLogin(), user.getEmail(), user.getBirthday());
+            jdbcTemplate.update(con -> {
+                var ps = con.prepareStatement(sqlQuery);
+                ps.setString(1, user.getName());
+                ps.setString(2, user.getLogin());
+                ps.setString(3, user.getEmail());
+                ps.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
+                return ps;
+            });
             String sqlQuery2 = "SELECT * FROM users WHERE id = (SELECT MAX(id) FROM users)";
 
-            return jdbcTemplate.queryForObject(sqlQuery2, new UserRowMapper());
+            List<User> users = jdbcTemplate.query(con -> con.prepareStatement(sqlQuery2), new UserRowMapper());
+            return users.stream().findFirst().orElse(null);
         }
     }
 
@@ -53,39 +65,56 @@ public class UserDbStorage implements UserStorage {
     public User update(User user) {
         findById(user.getId());
         String sqlQuery = "UPDATE users SET name = ?, email = ?, login = ?, birthday = ? WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(),
-                user.getId());
+        jdbcTemplate.update(con -> {
+            var ps = con.prepareStatement(sqlQuery);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getLogin());
+            ps.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
+            ps.setInt(5, user.getId());
+            return ps;
+        });
         return user;
     }
 
     @Override
     public User findById(int id) {
-        User user = null;
         String sqlQuery = "SELECT * FROM users WHERE id = ?";
         try {
-            user = jdbcTemplate.queryForObject(sqlQuery, new UserRowMapper(), id);
+            List<User> list = jdbcTemplate.query(con -> {
+                var ps = con.prepareStatement(sqlQuery);
+                ps.setInt(1, id);
+                return ps;
+            }, new UserRowMapper());
+            User user = list.stream().findFirst().orElseThrow(() -> {
+                log.trace("User with ID = " + id + " wasn't found!");
+                return new NotFoundException("User with ID = " + id + " wasn't found!");
+            });
+            return user;
         } catch (DataAccessException e) {
             log.trace("User with ID = " + id + " wasn't found!");
             throw new NotFoundException("User with ID = " + id + " wasn't found!");
         }
-        return user;
     }
 
     @Override
     public List<User> getUsers() {
         String sqlQuery1 = "SELECT * FROM users";
-        String sqlQuery2 = "SELECT * FROM friendships WHERE user1_id = ?";
-        List<User> users = jdbcTemplate.query(sqlQuery1, new UserRowMapper());
+        List<User> users = jdbcTemplate.query(con -> con.prepareStatement(sqlQuery1), new UserRowMapper());
         return users;
     }
-
 
     @Override
     public void addFriend(int userIdFrom, int userIdTo) {
         findById(userIdFrom);
         findById(userIdTo);
         String sqlQuery = "INSERT INTO friendships(user_id_from, user_id_to) VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, userIdFrom, userIdTo);
+        jdbcTemplate.update(con -> {
+            var ps = con.prepareStatement(sqlQuery);
+            ps.setInt(1, userIdFrom);
+            ps.setInt(2, userIdTo);
+            return ps;
+        });
     }
 
     @Override
@@ -94,7 +123,12 @@ public class UserDbStorage implements UserStorage {
         findById(userIdTo);
 
         String sqlQuery = "DELETE FROM friendships WHERE user_id_from = ? AND user_id_to = ?";
-        jdbcTemplate.update(sqlQuery, userIdFrom, userIdTo);
+        jdbcTemplate.update(con -> {
+            var ps = con.prepareStatement(sqlQuery);
+            ps.setInt(1, userIdFrom);
+            ps.setInt(2, userIdTo);
+            return ps;
+        });
     }
 
     @Override
@@ -105,7 +139,11 @@ public class UserDbStorage implements UserStorage {
                 "RIGHT JOIN USERS AS u ON f.USER_ID_TO = u.ID\n" +
                 "WHERE f.USER_ID_FROM = ?";
 
-        return new HashSet<>(jdbcTemplate.query(sqlQuery, new UserRowMapper(), id));
+        return new HashSet<>(jdbcTemplate.query(con -> {
+            var ps = con.prepareStatement(sqlQuery);
+            ps.setInt(1, id);
+            return ps;
+        }, new UserRowMapper()));
     }
 
     @Override

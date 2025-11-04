@@ -122,7 +122,8 @@ public class FilmDbStorageIntegrationTest {
         assertEquals(f1.getId(), top1.get(0).getId());
 
         filmDbStorage.deleteLike(savedU1.getId(), f2.getId());
-        int remaining = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM liked_films WHERE film_id = ?", Integer.class, f2.getId());
+        int remaining = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM liked_films WHERE film_id = ?",
+                Integer.class, f2.getId());
         assertEquals(0, remaining);
     }
 }
