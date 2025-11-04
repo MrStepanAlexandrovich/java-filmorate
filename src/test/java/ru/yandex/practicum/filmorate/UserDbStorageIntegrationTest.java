@@ -71,7 +71,7 @@ public class UserDbStorageIntegrationTest {
     }
 
     @Test
-    public void addAndDeleteFriend_and_getFriends() {
+    public void addAndDeleteFriendAndGetFriends() {
         User u1 = new User();
         u1.setName("U1");
         u1.setLogin("u1");
