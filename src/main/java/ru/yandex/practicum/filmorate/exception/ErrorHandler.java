@@ -12,8 +12,7 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 
 import java.util.Map;
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MPAController.class,
-        GenresController.class})
+@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, MPAController.class, GenresController.class})
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

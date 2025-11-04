@@ -17,8 +17,6 @@ public interface FilmStorage {
 
     List<Film> getAllFilms();
 
-  //  Film find(int filmId);
-
     List<MPARating> getMpas();
 
     MPARating getMpa(int id);
