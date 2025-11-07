@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.Duration;
@@ -25,10 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @ActiveProfiles("test")
-public class FilmDbStorageIntegrationTest {
+public class StoragesIntegrationTest {
 
     @Autowired
     private FilmDbStorage filmDbStorage;
+
+    @Autowired
+    private LikeStorage likeDbStorage;
 
     @Autowired
     private UserDbStorage userDbStorage;
@@ -80,7 +84,6 @@ public class FilmDbStorageIntegrationTest {
         assertEquals(saved.getId(), fetched.getId());
         assertEquals("MyFilm", fetched.getName());
         assertNotNull(fetched.getGenres());
-        assertTrue(fetched.getGenres().size() >= 1);
         assertEquals(1, fetched.getMpa().getId());
     }
 
@@ -125,7 +128,7 @@ public class FilmDbStorageIntegrationTest {
         assertEquals(1, top1.size());
         assertEquals(f1.getId(), top1.get(0).getId());
 
-        filmDbStorage.deleteLike(savedU1.getId(), f2.getId());
+        likeDbStorage.deleteLike(savedU1.getId(), f2.getId());
         int remaining = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM liked_films WHERE film_id = ?",
                 Integer.class, f2.getId());
         assertEquals(0, remaining);

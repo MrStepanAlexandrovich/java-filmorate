@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.mpa;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 @Slf4j
 @RequiredArgsConstructor
-public class MpaDbStorage {
+public class MpaDbStorage implements MpaStorage{
     private final JdbcTemplate jdbcTemplate;
 
     public List<MPARating> getMpas() {

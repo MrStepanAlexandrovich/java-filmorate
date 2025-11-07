@@ -122,22 +122,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteLike(int userId, int filmId) {
-        String sqlQuery = "DELETE FROM liked_films WHERE user_id = ? AND film_id = ?";
-        try {
-            jdbcTemplate.update(con -> {
-                var ps = con.prepareStatement(sqlQuery);
-                ps.setInt(1, userId);
-                ps.setInt(2, filmId);
-                return ps;
-            });
-        } catch (DataAccessException e) {
-            log.info("Like not found!");
-            throw new NotFoundException("Like not found!");
-        }
-    }
-
-    @Override
     public List<Film> getMostLikedFilms(int count) {
         String sqlQuery = "SELECT l.FILM_ID, COUNT(l.FILM_ID), f.*, m.RATING " +
                 "FROM LIKED_FILMS AS l " +

@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,19 +39,19 @@ public class UserDbStorage implements UserStorage {
         if (!user.birthdayIsValid()) {
             throw new ValidationException("Incorrect birthday date!");
         } else {
+            GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
             String sqlQuery = "INSERT INTO users(name, login, email, birthday) VALUES(?, ?, ?, ?)";
             jdbcTemplate.update(con -> {
-                var ps = con.prepareStatement(sqlQuery);
+                var ps = con.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, user.getName());
                 ps.setString(2, user.getLogin());
                 ps.setString(3, user.getEmail());
                 ps.setDate(4, java.sql.Date.valueOf(user.getBirthday()));
                 return ps;
-            });
-            String sqlQuery2 = "SELECT * FROM users WHERE id = (SELECT MAX(id) FROM users)";
+            }, keyHolder);
 
-            List<User> users = jdbcTemplate.query(con -> con.prepareStatement(sqlQuery2), new UserRowMapper());
-            return users.stream().findFirst().orElse(null);
+            user.setId(keyHolder.getKeyAs(Integer.class));
+            return user;
         }
     }
 
@@ -126,9 +128,9 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Set<User> getFriends(int id) {
         findById(id);
-        String sqlQuery = "SELECT u.*\n" +
-                "FROM FRIENDSHIPS AS f\n" +
-                "RIGHT JOIN USERS AS u ON f.USER_ID_TO = u.ID\n" +
+        String sqlQuery = "SELECT u.* " +
+                "FROM FRIENDSHIPS AS f " +
+                "RIGHT JOIN USERS AS u ON f.USER_ID_TO = u.ID " +
                 "WHERE f.USER_ID_FROM = ?";
 
         return new HashSet<>(jdbcTemplate.query(con -> {

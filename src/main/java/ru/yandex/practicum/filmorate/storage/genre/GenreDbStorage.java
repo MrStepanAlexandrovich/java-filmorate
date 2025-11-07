@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.storage.genre;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.Set;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class GenreDbStorage {
+public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public Genre getGenre(int id) {
