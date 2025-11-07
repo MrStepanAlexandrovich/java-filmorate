@@ -140,4 +140,17 @@ public class FilmService {
         film.setGenres(genres);
         return film;
     }
+
+    public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.getAllFilms();
+        List filmsByGenre = genreStorage.getAllGenresOfAllFilms();
+
+        films.stream()
+                .peek(film -> filmsByGenre.stream().filter(film.getId()))
+        return films;
+    }
+
+    public void deleteFilm(int id) {
+        filmStorage.delete(id);
+    }
 }

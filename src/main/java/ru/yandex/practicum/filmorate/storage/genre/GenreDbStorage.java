@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.genre;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,9 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -51,5 +54,23 @@ public class GenreDbStorage implements GenreStorage {
         }, new GenreRowMapper());
 
         return new HashSet<>(genres);
+    }
+
+    public List getAllGenresOfAllFilms() {
+        String sqlQuery = "SELECT * " +
+                "FROM films_genres AS f " +
+                "LEFT JOIN genres AS g ON f.genre_id = g.id";
+
+        List<Map<String, Object>> genresByFilmId = jdbcTemplate.queryForList(sqlQuery);
+
+        List filmsByGenre = genresByFilmId.stream()
+                .map(stringObjectMap -> new Pair((Integer) stringObjectMap.get("FILM_ID"),
+                        new Genre(
+                                (Integer) stringObjectMap.get("GENRE_ID"),
+                                (String) stringObjectMap.get("NAME")
+                        )))
+                .collect(Collectors.toList());
+
+        return filmsByGenre;
     }
 }
