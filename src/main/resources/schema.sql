@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS mpa
 (
     id  INTEGER PRIMARY KEY,
-    name VARCHAR NOT NULL
+    rating VARCHAR NOT NULL
 );
 
 
@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS films_genres
 (
     genre_id INTEGER,
     film_id  INTEGER NOT NULL,
+    PRIMARY KEY(genre_id, film_id),
     FOREIGN KEY (genre_id)
         REFERENCES genres (id)
         ON DELETE CASCADE

@@ -60,29 +60,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<MPARating> getMpas() {
-        return List.of();
-    }
-
-    @Override
-    public MPARating getMpa(int id) {
-        return null;
-    }
-
-    @Override
-    public Genre getGenre(int id) {
-        return null;
-    }
-
-    @Override
-    public List<Genre> getAllGenres() {
-        return List.of();
-    }
-
-    @Override
-    public void deleteLike(int userId, int filmId) {
-
-    }
+    public void deleteLike(int userId, int filmId) {}
 
     @Override
     public List<Film> getMostLikedFilms(int count) {

@@ -17,14 +17,6 @@ public interface FilmStorage {
 
     List<Film> getAllFilms();
 
-    List<MPARating> getMpas();
-
-    MPARating getMpa(int id);
-
-    Genre getGenre(int id);
-
-    List<Genre> getAllGenres();
-
     void deleteLike(int userId, int filmId);
 
     List<Film> getMostLikedFilms(int count);

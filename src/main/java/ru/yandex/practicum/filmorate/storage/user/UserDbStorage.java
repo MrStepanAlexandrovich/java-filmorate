@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,17 +18,9 @@ import java.util.stream.Collectors;
 @Repository
 @Primary
 @Slf4j
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
-    private JdbcTemplate jdbcTemplate;
-
-    public UserDbStorage() {
-        super();
-    }
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void delete(int id) {

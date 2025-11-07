@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPARating;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -19,14 +21,19 @@ import java.util.*;
 @Service
 public class FilmService {
     private final JdbcTemplate jdbcTemplate;
-    FilmStorage filmStorage;
-    UserStorage userStorage;
+    private final MpaDbStorage mpaDbStorage;
+    private final GenreDbStorage genreDbStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, JdbcTemplate jdbcTemplate) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, JdbcTemplate jdbcTemplate,
+                       MpaDbStorage mpaDbStorage, GenreDbStorage genreDbStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.jdbcTemplate = jdbcTemplate;
+        this.mpaDbStorage = mpaDbStorage;
+        this.genreDbStorage = genreDbStorage;
     }
 
     public void likeFilm(int userId, int filmId) {
@@ -101,7 +108,7 @@ public class FilmService {
 
 
     public boolean genresAreValid(Film film) {
-        List<Integer> genreIds = filmStorage.getAllGenres()
+        List<Integer> genreIds = genreDbStorage.getAllGenres()
                 .stream()
                 .map(Genre::getId)
                 .toList();
@@ -114,11 +121,11 @@ public class FilmService {
     }
 
     public List<MPARating> getMpas() {
-        return filmStorage.getMpas();
+        return mpaDbStorage.getMpas();
     }
 
     public MPARating getMpaById(int id) {
-        MPARating mpaRating = filmStorage.getMpa(id);
+        MPARating mpaRating = mpaDbStorage.getMpa(id);
 
         if (mpaRating == null) {
             throw new NotFoundException("MPA rating with ID = " + id + " wasn't found");
@@ -128,14 +135,17 @@ public class FilmService {
     }
 
     public Genre getGenre(int id) {
-        return filmStorage.getGenre(id);
+        return genreDbStorage.getGenre(id);
     }
 
     public List<Genre> getAllGenres() {
-        return filmStorage.getAllGenres();
+        return genreDbStorage.getAllGenres();
     }
 
     public Film getFilm(int id) {
-        return filmStorage.getFilm(id);
+        Film film = filmStorage.getFilm(id);
+        Set<Genre> genres = genreDbStorage.getByFilmId(id);
+        film.setGenres(genres);
+        return film;
     }
 }

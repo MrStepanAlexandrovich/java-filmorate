@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS mpa
 (
     id  INTEGER PRIMARY KEY,
-    name VARCHAR NOT NULL
+    rating VARCHAR NOT NULL
 );
 
 
