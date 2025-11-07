@@ -18,6 +18,7 @@ public class FriendDbStorage implements FriendStorage {
             return ps;
         });
     }
+
     public void deleteFriend(int userIdFrom, int userIdTo) {
         String sqlQuery = "DELETE FROM friendships WHERE user_id_from = ? AND user_id_to = ?";
         jdbcTemplate.update(con -> {
