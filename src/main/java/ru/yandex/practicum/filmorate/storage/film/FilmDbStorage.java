@@ -139,12 +139,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getMostLikedFilms(int count) {
-        String sqlQuery = "SELECT l.FILM_ID, COUNT(l.FILM_ID), f.*\n" +
-                "FROM LIKED_FILMS AS l\n" +
-                "LEFT JOIN FILMS AS f ON l.FILM_ID = f.ID\n" +
-                "GROUP BY l.FILM_ID\n" +
-                "ORDER BY COUNT(l.FILM_ID) DESC\n" +
-                "LIMIT ?;\n";
+        String sqlQuery = "SELECT l.FILM_ID, COUNT(l.FILM_ID), f.*, m.RATING " +
+                "FROM LIKED_FILMS AS l " +
+                "LEFT JOIN FILMS AS f ON l.FILM_ID = f.ID " +
+                "LEFT JOIN MPA m ON f.MPA_ID = m.id " +
+                "GROUP BY l.FILM_ID " +
+                "ORDER BY COUNT(l.FILM_ID) DESC " +
+                "LIMIT ?";
 
         return jdbcTemplate.query(con -> {
             var ps = con.prepareStatement(sqlQuery);
