@@ -63,8 +63,8 @@ public class GenreDbStorage implements GenreStorage {
 
         List<Map<String, Object>> genresByFilmId = jdbcTemplate.queryForList(sqlQuery);
 
-        List filmsByGenre = genresByFilmId.stream()
-                .map(stringObjectMap -> new Pair((Integer) stringObjectMap.get("FILM_ID"),
+        List<Pair<Integer, Genre>> filmsByGenre = genresByFilmId.stream()
+                .map(stringObjectMap -> new Pair<Integer, Genre>((Integer) stringObjectMap.get("FILM_ID"),
                         new Genre(
                                 (Integer) stringObjectMap.get("GENRE_ID"),
                                 (String) stringObjectMap.get("NAME")

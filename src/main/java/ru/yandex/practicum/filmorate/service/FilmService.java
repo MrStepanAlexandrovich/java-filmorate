@@ -15,8 +15,11 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import org.antlr.v4.runtime.misc.Pair;
+
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -143,10 +146,15 @@ public class FilmService {
 
     public List<Film> getAllFilms() {
         List<Film> films = filmStorage.getAllFilms();
-        List filmsByGenre = genreStorage.getAllGenresOfAllFilms();
+        List<Pair<Integer, Genre>> filmsByGenre = genreStorage.getAllGenresOfAllFilms();
 
-        films.stream()
-                .peek(film -> filmsByGenre.stream().filter(film.getId()))
+        for (Film film : films) {
+            for (Pair<Integer, Genre> filmGenrePair : filmsByGenre) {
+                if (filmGenrePair.a == film.getId()) {
+                    film.getGenres().add(filmGenrePair.b);
+                }
+            }
+        }
         return films;
     }
 
