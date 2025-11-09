@@ -15,7 +15,6 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import org.antlr.v4.runtime.misc.Pair;
 
 
 import java.util.*;
@@ -138,23 +137,13 @@ public class FilmService {
 
     public Film getFilm(int id) {
         Film film = filmStorage.getFilm(id);
-        Set<Genre> genres = genreStorage.getByFilmId(id);
+        Set<Genre> genres = genreStorage.getGenresOfFilms(id);
         film.setGenres(genres);
         return film;
     }
 
     public List<Film> getAllFilms() {
-        List<Film> films = filmStorage.getAllFilms();
-        List<Pair<Integer, Genre>> filmsByGenre = genreStorage.getAllGenresOfAllFilms();
-
-        for (Film film : films) {
-            for (Pair<Integer, Genre> filmGenrePair : filmsByGenre) {
-                if (filmGenrePair.a == film.getId()) {
-                    film.getGenres().add(filmGenrePair.b);
-                }
-            }
-        }
-        return films;
+        return filmStorage.getAllFilms();
     }
 
     public void deleteFilm(int id) {
