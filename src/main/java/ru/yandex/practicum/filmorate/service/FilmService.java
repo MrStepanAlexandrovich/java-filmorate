@@ -137,13 +137,16 @@ public class FilmService {
 
     public Film getFilm(int id) {
         Film film = filmStorage.getFilm(id);
-        Set<Genre> genres = genreStorage.getGenresOfFilms(id);
+        Set<Genre> genres = genreStorage.setGenresToFilms(id);
         film.setGenres(genres);
         return film;
     }
 
     public List<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
+        List<Film> films = filmStorage.getAllFilms();
+        genreStorage.setGenresToFilms(films);
+
+        return films;
     }
 
     public void deleteFilm(int id) {

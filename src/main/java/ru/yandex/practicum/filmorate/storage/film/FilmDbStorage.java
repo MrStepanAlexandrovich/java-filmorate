@@ -86,15 +86,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        String sqlQuery = "SELECT f.id AS film_id, f.name AS film_name, DESCRIPTION, RELEASE_DATE, DURATION, " +
-        "MPA_ID, RATING, g.ID AS genre_id, g.name AS genre_name " +
-        "FROM FILMS f " +
-        "LEFT JOIN MPA m on M.ID = f.MPA_ID " +
-        "LEFT JOIN FILMS_GENRES fg ON f.ID = fg.FILM_ID " +
-        "LEFT JOIN GENRES g on g.ID = fg.GENRE_ID";
+        String sqlQuery = "SELECT f.*, m.rating " +
+                " FROM films AS f " +
+                " JOIN MPA AS m ON f.MPA_ID = m.ID";
 
-
-        List<Film> films = jdbcTemplate.query(con -> con.prepareStatement(sqlQuery), new FilmsWithGenresExtractor());
+        List<Film> films = jdbcTemplate.query(con -> con.prepareStatement(sqlQuery), new FilmRowMapper());
 
         return films;
     }
