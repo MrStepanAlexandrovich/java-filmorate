@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -82,5 +83,31 @@ public class InMemoryUserStorage implements UserStorage {
         }
 
         return optionalUser.get();
+    }
+
+    public void addFriend(int id, int friendId) {
+        User user = users.get(id);
+        User friend = users.get(friendId);
+
+        user.getFriends().add(friendId);
+        friend.getFriends().add(id);
+    }
+
+    public void deleteFriend(int id, int friendId) {
+        User user = findById(id);
+        User friend = findById(friendId);
+
+        user.deleteFriend(friendId);
+        friend.deleteFriend(id);
+    }
+
+    @Override
+    public Set<User> getFriends(int id) {
+        return Set.of();
+    }
+
+    @Override
+    public Set<User> getCommonFriends(int user1Id, int user2Id) {
+        return Set.of();
     }
 }

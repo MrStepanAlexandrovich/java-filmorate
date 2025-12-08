@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
+@NoArgsConstructor
 public class User {
     @NonNull
     private int id;
@@ -37,14 +39,8 @@ public class User {
 
     private Set<Integer> friends = new HashSet<>();
 
-    private Set<Integer> likedFilms = new HashSet<>();
-
     public boolean birthdayIsValid() {
-        return birthday.isAfter(LocalDate.now());
-    }
-
-    public void addFriend(User user) {
-        friends.add(user.getId());
+        return birthday.isBefore(LocalDate.now());
     }
 
     public void deleteFriend(int friendId) {
